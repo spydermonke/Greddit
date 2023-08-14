@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    # where backend is stored
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+  frontend:
+    depends_on:
+      - backend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "3000:3000" 
+    volumes:
+      - ./frontend/src:/app/src
+  nginx:
+    depends_on:
+       - backend
+       - frontend
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+       - "8080:8080"
+
+
+
